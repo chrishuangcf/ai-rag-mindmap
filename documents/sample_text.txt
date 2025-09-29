@@ -1,0 +1,40 @@
+Sample Text Document for Multi-File RAG Testing
+
+This is a plain text document that demonstrates the RAG system's ability to process and index TXT files along with other file formats.
+
+Introduction to Machine Learning
+
+Machine Learning (ML) is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed. It focuses on the development of computer programs that can access data and use it to learn for themselves.
+
+Key Types of Machine Learning:
+
+1. Supervised Learning
+   - Uses labeled training data
+   - Examples: Classification, Regression
+   - Algorithms: Linear Regression, Decision Trees, Neural Networks
+
+2. Unsupervised Learning
+   - Finds hidden patterns in data
+   - Examples: Clustering, Association Rules
+   - Algorithms: K-means, Hierarchical Clustering
+
+3. Reinforcement Learning
+   - Learns through interaction with environment
+   - Uses rewards and penalties
+   - Applications: Game AI, Robotics
+
+Applications in Industry:
+
+Healthcare: AI assists in medical diagnosis, drug discovery, and personalized treatment plans. Machine learning algorithms can analyze medical images to detect diseases like cancer at early stages.
+
+Finance: Used for fraud detection, algorithmic trading, credit scoring, and risk assessment. Banks use AI chatbots for customer service and robo-advisors for investment recommendations.
+
+Technology: Powers recommendation systems, natural language processing, computer vision, and autonomous systems.
+
+Future Trends:
+- Explainable AI
+- Edge Computing
+- Automated Machine Learning (AutoML)
+- Quantum Machine Learning
+
+This text file demonstrates how TXT files can be processed alongside other document formats in the RAG system.

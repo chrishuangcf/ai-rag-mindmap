@@ -1,0 +1,21 @@
+# Start from a specific version of Python slim image
+FROM python:3.11-slim
+
+# Install system dependencies including ca-certificates
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    g++ \
+    gcc \
+    pandoc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install custom certificates
+COPY certs/ca.pem /usr/local/share/ca-certificates/ca.crt
+RUN update-ca-certificates
+
+# Set environment variables for SSL
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+ENV PYTHONUNBUFFERED=1
+

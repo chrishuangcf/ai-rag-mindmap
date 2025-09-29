@@ -1,0 +1,73 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Uploads and temporary files
+uploads/*
+!uploads/.gitkeep
+tmp/
+temp/
+
+# Cache directories (ChromaDB removed from project)
+chroma_cache/
+chroma_db/
+
+# Persistent data directories
+data/redis/*
+!data/redis/.gitkeep
+data/neo4j/*
+!data/neo4j/.gitkeep
+data/neo4j_logs/*
+!data/neo4j_logs/.gitkeep
+
+# SSL certificates (keep structure but not actual certs in production)
+certs/*.crt
+certs/*.key
+certs/*.pem
+!certs/certs.sh
+
+# OS generated files
+.directory
+.fuse_hidden*%
+
+langchain_server_key.txt
+openrouter_openai_api_key.txt

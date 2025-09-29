@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG/Mind Map/Deep Analysis Documentation System Demo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+    <h1>RAG/Mind Map/Deep Analysis Documentation System Demo</h1>
+
+    <div class="container">
+        <h2>
+            <span id="api-health-status-dot" class="status-dot" style="display: none;">🟢</span>
+            API Health
+            <button class="toggle-btn" onclick="toggleSection('api-health-content')">▼</button>
+        </h2>
+        <div id="api-health-content" class="collapsible-content">
+            <div class="health-controls">
+                <button id="healthCheckButton">Check Health Now</button>
+                <label class="toggle-label">
+                    <input type="checkbox" id="autoRefreshToggle" checked>
+                    <span class="toggle-text">Auto-refresh (10s)</span>
+                </label>
+            </div>
+            <div id="healthStatus"></div>
+            <details>
+                <summary>RAG Service Status</summary>
+                <div id="systemStatus" style="margin-top: 10px;"></div>
+            </details>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>
+            RAG a Document
+            <button class="toggle-btn" onclick="toggleSection('rag-document-content')">▼</button>
+        </h2>
+        <div id="rag-document-content" class="collapsible-content">
+            <div class="rag-input-area">
+                <!-- URL Input Form -->
+                <form id="ragForm">
+                    <label for="repoUrls">Enter Document URL(s) (supports .md, .txt files):</label>
+                    <textarea id="repoUrls" name="repoUrls" rows="2" required placeholder="https://.../file.md or https://.../file.txt (one per line)"></textarea>
+                    
+                    <div class="form-group">
+                        <label for="gitlabToken">GitLab Access Token (for private repos):</label>
+                        <input type="password" id="gitlabToken" placeholder="asdf-xxxxxxxxxxxxxxxxxxxx">
+                        <button type="button" onclick="handleTestGitlab()" class="test-btn">Test Access Token</button>
+                    </div>
+                    <div class="help-text">
+                        📝 For private GitLab repositories, enter your Personal Access Token here<br>
+                        ⚠️ <strong>For SAML-protected GitLab (like corporate instances):</strong><br>
+                        1. Log into GitLab via SAML first<br>
+                        2. Create token with 'read_repository' or 'read_api' scope<br>
+                        3. Use the token immediately while SAML session is active
+                    </div>
+                    <div></div>
+                    <button type="submit">Process from URL</button>
+                </form>
+                <!-- File Upload Form -->
+                <form id="uploadForm" class="upload-form">
+                    <label for="fileUpload">Or Upload Multiple Files (PDF/DOCX/Markdown/TXT):</label>
+                    <input type="file" id="fileUpload" name="files" accept=".pdf,.docx,.md,.markdown,.txt" multiple>
+                    <button type="submit">Process from Files</button>
+                    <small class="help-text">You can select multiple files to upload at once</small>
+                </form>
+            </div>
+            <div id="ragResponseContainer" class="response-container" style="display:none;">
+                <h3>Document Processed Successfully</h3>
+                <div id="ragAnswer" class="markdown-body"></div>
+                <details>
+                    <summary id="ragSourcesToggle">View Source Documents</summary>
+                    <div id="ragSources"></div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>AI-Powered Document Search</h2>
+        <form id="globalSearchForm">
+            <label for="globalQuery">Search Query:</label>
+            <textarea type="text" id="globalQuery" name="globalQuery" rows="4" required placeholder="Ask questions about your uploaded documents..."></textarea>
+            
+            <div class="analysis-options">
+                <label class="radio-label">
+                    <input type="radio" name="analysisType" value="summary" checked>
+                    <span class="radio-text">📝 Summary Analysis (Quick and concise answers)</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="analysisType" value="deep">
+                    <span class="radio-text">🧠 Deep Thinking (Comprehensive analysis with detailed insights)</span>
+                </label>
+            </div>
+            
+            <button type="submit">Get AI Answer</button>
+        </form>
+        
+        <div id="globalSearchResults" class="response-container" style="display:none;">
+            <h3 id="searchResultsTitle">AI Answer</h3>
+            <div id="searchAnswer" class="markdown-body"></div>
+            <details id="globalSourcesDetails">
+                <summary id="globalSourcesToggle">View Source Documents</summary>
+                <div id="searchResults"></div>
+            </details>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>
+            Cache Management
+            <button class="toggle-btn" onclick="toggleSection('cache-management-content')">▼</button>
+        </h2>
+        <div id="cache-management-content" class="collapsible-content">
+            <div class="controls">
+                <input type="text" id="searchInput" placeholder="Search by URL or filename...">
+                <button id="clearAllButton">Clear All Caches</button>
+            </div>
+            <table id="cacheTable">
+                <thead>
+                    <tr>
+                        <th>Hash</th>
+                        <th>URLs</th>
+                        <th>Storage</th>
+                        <th>Total Chunks</th>
+                        <th>Created At</th>
+                        <th>Last Accessed</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cache entries will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<!-- Vector Mind Map Section -->
+    <div class="container mindmap-container">
+        <h2>
+            🧠 Vector Mind Map Visualization
+            <button class="toggle-btn" onclick="toggleSection('mindmap-content')">▼</button>
+        </h2>
+        <div id="mindmap-content" class="collapsible-content">
+            <div class="mindmap-controls">
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="auto-mindmap-enabled" checked> 
+                        Auto-generate mind map from uploaded documents
+                    </label>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="mindmap-focus">Focus:</label>
+                        <select id="mindmap-focus">
+                            <option value="technical">Technical Concepts</option>
+                            <option value="general">General Concepts</option>
+                            <option value="mixed">Mixed Approach</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="mindmap-max-concepts">Max Concepts: <span id="mindmap-max-concepts-value">20</span></label>
+                        <input type="range" id="mindmap-max-concepts" min="10" max="50" value="20">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <button id="create-mindmap-btn" onclick="createVectorMindMap()">🧠 Generate Mind Map</button>
+                    <button id="reset-mindmap-btn" onclick="resetMindMap()">🔄 Reset View</button>
+                </div>
+                <div id="mindmap-status" class="status-message"></div>
+            </div>
+            
+            <div id="mindmap-visualization" class="mindmap-viz">
+                <div id="mindmap-loading" class="mindmap-loading">
+                    <h3>🧠 Vector Mind Map</h3>
+                    <p>Upload documents or generate a mind map to visualize concepts and relationships</p>
+                </div>
+            </div>
+            
+            <div id="mindmap-legend" class="mindmap-legend" style="display: none;">
+                <h4>Legend:</h4>
+                <div class="legend-item">🔵 <span class="legend-tech">■</span> Technical Concepts</div>
+                <div class="legend-item">⚪ <span class="legend-general">■</span> General Concepts</div>
+                <div class="legend-item">🔗 Vector-based Relationships</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>
+            Direct URL Analysis
+            <button class="toggle-btn" onclick="toggleSection('url-analysis-content')">▼</button>
+        </h2>
+        <div id="url-analysis-content" class="collapsible-content">
+            <p class="description">Analyze content from URLs directly without caching (for one-time comprehensive analysis)</p>
+            <form id="urlAnalysisForm">
+                <label for="urlAnalysisUrls">Enter Document URL(s):</label>
+                <textarea id="urlAnalysisUrls" name="urlAnalysisUrls" rows="2" required placeholder="https://.../file.md or https://.../file.txt (one per line)"></textarea>
+                
+                <label for="urlAnalysisQuery">Your Question:</label>
+                <textarea id="urlAnalysisQuery" name="urlAnalysisQuery" rows="3" required placeholder="Ask a detailed question about the content..."></textarea>
+                
+                <div class="analysis-options">
+                    <label class="radio-label">
+                        <input type="radio" name="urlAnalysisType" value="summary" checked>
+                        <span class="radio-text">📝 Summary Analysis (Quick and focused)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="urlAnalysisType" value="deep">
+                        <span class="radio-text">🧠 Deep Thinking (Comprehensive insights and analysis)</span>
+                    </label>
+                </div>
+                
+                <button type="submit">Analyze Content</button>
+            </form>
+            
+            <div id="urlAnalysisResults" class="response-container" style="display:none;">
+                <h3>URL Analysis Results</h3>
+                <div id="urlAnalysisAnswer" class="markdown-body"></div>
+                <details>
+                    <summary id="urlAnalysisSourcesToggle">View Source Documents</summary>
+                    <div id="urlAnalysisSources"></div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- LLM Provider Configuration -->
+    <div class="container config-container footer-config">
+        <h2>
+            LLM Model Switcher
+            <button class="toggle-btn" onclick="toggleSection('llm-switcher-content')">▼</button>
+        </h2>
+        <div id="llm-switcher-content" class="collapsible-content">
+            <div class="llm-status">
+                <span>Provider: <strong id="current-provider">Loading...</strong></span>
+                <span>Model: <strong id="current-model">Loading...</strong></span>
+            </div>
+            <div class="llm-switcher">
+                <label for="provider-select">Switch LLM:</label>
+                <select id="provider-select">
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="ollama">Ollama</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+
+    <!-- Content Detail Modal - Common component for showing cache content and node details -->
+    <div id="content-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="modal-title">Content Details</h3>
+            <div class="modal-controls">
+                <button id="modal-raw-btn" class="modal-tab-btn active" onclick="showModalTab('raw')">Raw Content</button>
+                <button id="modal-markdown-btn" class="modal-tab-btn" onclick="showModalTab('markdown')">Rendered Markdown</button>
+            </div>
+            <div id="modal-body">
+                <div id="modal-raw-content" class="modal-tab-content active"></div>
+                <div id="modal-markdown-content" class="modal-tab-content"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
